@@ -20,38 +20,10 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     await client.connect();
-    const database = client.db("lightOfIslam");
-    const questionCollection = database.collection("questions");
-    const userCollection = database.collection("users");
-    const eventCollection = database.collection("events");
-    const statusCollection = database.collection("bookingStatus");
-    const scheduleCollection = database.collection("schedule");
-    const paymentCollection = database.collection("paymentInfo");
-    const scholarIdCollection = database.collection("IFB_identity");
-    const financeCollection = database.collection("finance");
-    const loanCollection = database.collection("loanSchema");
-    const depositHistory = database.collection("loanSchema");
-    const loanCollection2 = database.collection("loanSchema2");
-    // const orderCollection = database.collection("orders");
-    // const reviewCollection = database.collection("reviews");
-    // const orderCollection = database.collection("orders");
-
-    //get products api
-    // app.get("/products", async (req, res) => {
-    //   const cursor = productCollection.find({});
-    //   const products = await cursor.toArray();
-    //   res.send(products);
-    // });
-
-    // // get single product
-
-    // // // delete api(products)
-    // app.delete("/products/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: ObjectId(id) };
-    //   const result = await productCollection.deleteOne(query);
-    //   res.json(result);
-    // });
+    const database = client.db("CoddingServer");
+    const userDetailsCollection = database.collection("userDetails");
+    const userDetailsInfoCollection = database.collection("userDetailsInfo");
+    const userCollection = database.collection("user");
 
     //get single user
 
@@ -62,34 +34,28 @@ async function run() {
       res.json(singleScholar);
     });
 
-    // get admin info
-    app.get("/users/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { email: email };
-      const user = await userCollection.findOne(query);
-      let isAdmin = false;
-      if (user?.role === "admin") {
-        isAdmin = true;
-      }
-      res.json({ admin: isAdmin });
-    });
-    //scholar
-    app.get("/users/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { email: email };
-      const user = await userCollection.findOne(query);
-      let isScholar = false;
-      if (user?.role === "scholar") {
-        isAdmin = true;
-      }
-      res.json({ scholar: isScholar });
-    });
-
-    // users post api
-    app.post("/users", async (req, res) => {
+    // usersdetail post api
+    app.post("/usersDetail", async (req, res) => {
       const user = req.body;
-      const result = await userCollection.insertOne(user);
+      // console.log("first", user);
+      const result = await userDetailsCollection.insertOne(user);
       res.json(result);
+    });
+    app.post("/usersDetailInfo", async (req, res) => {
+      const userInfo = req.body;
+      // console.log("first", user);
+      const result = await userDetailsInfoCollection.insertOne(userInfo);
+      res.json(result);
+    });
+    app.get("/sectorsDropdown", async (req, res) => {
+      const cursor = userDetailsCollection.find({});
+      const user = await cursor.toArray();
+      res.send(user);
+    });
+    app.get("/usersDetailInfo", async (req, res) => {
+      const cursor = userDetailsInfoCollection.find({});
+      const userInfo = await cursor.toArray();
+      res.send(userInfo);
     });
 
     app.put("/users", async (req, res) => {
@@ -112,75 +78,6 @@ async function run() {
       res.json(result);
     });
 
-    //findout single user
-    app.get("/users/profile/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { email: email };
-      const user = await userCollection.findOne(query);
-      res.json(user);
-    });
-
-    // get scholar
-
-    app.get("/users", async (req, res) => {
-      const cursor = userCollection.find({});
-      const user = await cursor.toArray();
-      res.send(user);
-    });
-
-    // admin api
-    app.put("/users/admin", async (req, res) => {
-      const user = req.body;
-      const filter = { email: user.email };
-      const updateDoc = { $set: { role: "admin" } };
-      const result = await userCollection.updateOne(filter, updateDoc);
-      res.json(result);
-    });
-
-    // scholar api
-    app.put("/users/scholar", async (req, res) => {
-      const user = req.body;
-      const filter = { email: user.email };
-      const updateDoc = { $set: { role: "scholar" } };
-      const result = await userCollection.updateOne(filter, updateDoc);
-      res.json(result);
-    });
-
-    // dmf loan schema
-
-    // send transaction info
-
-    app.post("/deposit", async (req, res) => {
-      const depositInfo = req.body;
-      const result = await loanCollection.insertOne(depositInfo);
-      res.json(result);
-    });
-    app.get("/deposit", async (req, res) => {
-      const cursor = loanCollection.find({});
-      const depositInfo = await cursor.toArray();
-      res.send(depositInfo);
-    });
-    app.get("/deposit/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { email: email };
-      const depositInfo = await loanCollection?.find(query);
-      res.json(depositInfo);
-    });
-
-    app.post("/loanRequest", async (req, res) => {
-      const loanInfo = req.body;
-      const result = await loanCollection2.insertOne(loanInfo);
-      res.json(result);
-    });
-
-    //insert deposit history
-
-    app.post("/depositHistory", async (req, res) => {
-      const depositHistoryInfo = req.body;
-      const result = await depositHistory.insertOne(depositHistoryInfo);
-      res.json(result);
-    });
-
     app.put("/deposit", async (req, res) => {
       const depositInfo = req.body;
       console.log(depositInfo);
@@ -193,21 +90,6 @@ async function run() {
       res.json(result);
     });
 
-    // send question
-    app.post("/questions", async (req, res) => {
-      const question = req.body;
-      const result = await questionCollection.insertOne(question);
-      res.json(result);
-    });
-
-    // // get individual question api
-
-    app.get("/questions", async (req, res) => {
-      const cursor = questionCollection.find({});
-      const question = await cursor.toArray();
-      res.send(question);
-    });
-
     // delete question api
 
     app.delete("/questions/:id", async (req, res) => {
@@ -217,13 +99,6 @@ async function run() {
       res.json(result);
     });
 
-    // get single question api
-    app.get("/questions/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: ObjectId(id) };
-      const question = await questionCollection.findOne(query);
-      res.json(question);
-    });
     // update question with answer
     app.put("/questions/answer", async (req, res) => {
       const answer = req.body;
@@ -440,9 +315,9 @@ async function run() {
 }
 run().catch(console.dir);
 app.get("/", (req, res) => {
-  res.send("dmf server two is running");
+  res.send("codding server two is running");
 });
 
 app.listen(port, () => {
-  console.log("server running at port ", port);
+  console.log("codding running at port ", port);
 });
