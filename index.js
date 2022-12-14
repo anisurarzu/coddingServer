@@ -21,7 +21,7 @@ async function run() {
   try {
     await client.connect();
     const database = client.db("CoddingServer");
-    const userDetailsCollection = database.collection("userDetails");
+    const sectorsCollections = database.collection("sectors");
     const userDetailsInfoCollection = database.collection("userDetailsInfo");
     const userCollection = database.collection("user");
 
@@ -35,10 +35,8 @@ async function run() {
     });
 
     // usersdetail post api
-    app.post("/usersDetail", async (req, res) => {
-      const user = req.body;
-      // console.log("first", user);
-      const result = await userDetailsCollection.insertOne(user);
+    app.post("/sector", async (req, res) => {
+      const result = await sectorsCollections.insertOne(sector);
       res.json(result);
     });
     app.post("/usersDetailInfo", async (req, res) => {
@@ -48,7 +46,7 @@ async function run() {
       res.json(result);
     });
     app.get("/sectorsDropdown", async (req, res) => {
-      const cursor = userDetailsCollection.find({});
+      const cursor = sectorsCollections.find({});
       const user = await cursor.toArray();
       res.send(user);
     });
